@@ -1,0 +1,1833 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Abu Hanifah: The Logic Files</title>
+
+<style>
+/* =========================================================
+   ABU HANIFAH — THE LOGIC FILES
+   Ancient Investigation Map
+========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Georgia, "Times New Roman", serif;
+    background:
+        radial-gradient(circle at center, #5c4630, #241a13);
+    color: #33291f;
+}
+
+/* =========================
+   MAIN GAME
+========================= */
+
+.game {
+    width: 100%;
+    max-width: 1100px;
+    margin: 30px auto;
+    padding: 18px;
+}
+
+.game-shell {
+    position: relative;
+    overflow: hidden;
+
+    background:
+        radial-gradient(
+            circle at 20% 20%,
+            #f7e9c7 0%,
+            #ead6ad 45%,
+            #d0b27b 100%
+        );
+
+    border: 4px solid #6d5132;
+    border-radius: 25px;
+
+    box-shadow:
+        0 20px 60px rgba(0,0,0,.5),
+        inset 0 0 60px rgba(70,40,10,.2);
+}
+
+/* Paper texture */
+
+.game-shell::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+
+    background-image:
+        radial-gradient(#725636 1px, transparent 1px);
+
+    background-size: 18px 18px;
+
+    opacity: .13;
+
+    pointer-events: none;
+}
+
+/* =========================
+   HEADER
+========================= */
+
+.header {
+    position: relative;
+    z-index: 2;
+
+    text-align: center;
+    padding: 28px 20px 15px;
+}
+
+.logo {
+    font-size: 45px;
+}
+
+.title {
+    font-size: clamp(28px, 5vw, 50px);
+    font-weight: 900;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+
+    color: #3c2a1d;
+
+    text-shadow:
+        2px 2px 0 #d7b982;
+}
+
+.subtitle {
+    margin-top: 7px;
+
+    font-size: 13px;
+    letter-spacing: 4px;
+
+    color: #765b39;
+}
+
+/* =========================
+   INTRO
+========================= */
+
+.intro {
+    position: relative;
+    z-index: 3;
+
+    padding: 20px 30px 40px;
+    text-align: center;
+}
+
+.intro-icons {
+    font-size: 55px;
+    margin: 10px 0;
+}
+
+.intro-text {
+    max-width: 650px;
+    margin: 15px auto 25px;
+
+    font-size: 17px;
+    line-height: 1.7;
+}
+
+.start-button {
+    border: none;
+
+    padding: 15px 30px;
+
+    border-radius: 12px;
+
+    background: #8b3026;
+    color: #fff4d7;
+
+    font-family: Georgia, serif;
+    font-size: 16px;
+    font-weight: bold;
+
+    cursor: pointer;
+
+    box-shadow: 0 5px 0 #5c211b;
+
+    transition: .2s;
+}
+
+.start-button:hover {
+    transform: translateY(-2px);
+}
+
+.start-button:active {
+    transform: translateY(3px);
+    box-shadow: 0 2px 0 #5c211b;
+}
+
+/* =========================
+   GAME CONTENT
+========================= */
+
+.game-content {
+    display: none;
+}
+
+/* =========================
+   PROGRESS
+========================= */
+
+.progress {
+    position: relative;
+    z-index: 3;
+
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+
+    padding: 5px 0 15px;
+}
+
+.progress-dot {
+    width: 12px;
+    height: 12px;
+
+    border-radius: 50%;
+
+    background: #a9926c;
+
+    transition: .3s;
+}
+
+.progress-dot.active {
+    background: #8b3026;
+
+    box-shadow:
+        0 0 0 5px rgba(139,48,38,.18);
+}
+
+.progress-dot.done {
+    background: #536b4d;
+}
+
+/* =========================
+   MAP
+========================= */
+
+.map-container {
+    position: relative;
+
+    margin: 0 18px 20px;
+
+    min-height: 560px;
+
+    overflow: hidden;
+
+    border: 2px solid #80623d;
+    border-radius: 20px;
+
+    background:
+        radial-gradient(
+            circle at 30% 30%,
+            rgba(255,255,255,.3),
+            transparent 35%
+        ),
+        #e2c99b;
+}
+
+/* decorative old map lines */
+
+.map-container::before {
+    content: "";
+
+    position: absolute;
+    inset: 0;
+
+    background:
+        linear-gradient(
+            115deg,
+            transparent 48%,
+            rgba(100,75,40,.13) 49%,
+            transparent 50%
+        );
+
+    opacity: .6;
+}
+
+/* =========================
+   SVG MAP
+========================= */
+
+.map-svg {
+    position: absolute;
+
+    width: 100%;
+    height: 100%;
+
+    inset: 0;
+}
+
+.old-road {
+    fill: none;
+
+    stroke: #9a7c50;
+    stroke-width: 10;
+
+    stroke-linecap: round;
+
+    stroke-dasharray: 2 18;
+
+    opacity: .6;
+}
+
+.route {
+    fill: none;
+
+    stroke: #8b3026;
+
+    stroke-width: 5;
+
+    stroke-linecap: round;
+
+    stroke-dasharray: 12 10;
+
+    transition: stroke-dashoffset 1s ease;
+}
+
+/* =========================
+   DECORATIONS
+========================= */
+
+.map-decoration {
+    position: absolute;
+
+    font-size: 32px;
+
+    opacity: .65;
+
+    filter: sepia(.5);
+
+    user-select: none;
+}
+
+.palm-1 {
+    left: 8%;
+    top: 17%;
+}
+
+.palm-2 {
+    right: 10%;
+    bottom: 12%;
+}
+
+.pottery {
+    right: 20%;
+    top: 12%;
+}
+
+.mosque {
+    left: 43%;
+    top: 38%;
+}
+
+.scroll-decoration {
+    left: 15%;
+    bottom: 17%;
+}
+
+/* compass */
+
+.compass {
+    position: absolute;
+
+    right: 25px;
+    top: 25px;
+
+    width: 75px;
+    height: 75px;
+
+    border: 2px solid #80623d;
+
+    border-radius: 50%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: #6d5132;
+
+    font-weight: bold;
+}
+
+.compass::after {
+    content: "✦";
+
+    position: absolute;
+
+    font-size: 42px;
+
+    opacity: .5;
+}
+
+/* =========================
+   CHECKPOINTS
+========================= */
+
+.checkpoint {
+    position: absolute;
+
+    transform: translate(-50%, -100%);
+
+    width: 90px;
+
+    text-align: center;
+
+    z-index: 5;
+
+    transition: .4s;
+}
+
+.pin {
+    width: 52px;
+    height: 52px;
+
+    margin: auto;
+
+    border-radius: 50% 50% 50% 0;
+
+    transform: rotate(-45deg);
+
+    background: #8b3026;
+
+    border: 3px solid #f7e8c4;
+
+    box-shadow:
+        0 5px 10px rgba(60,35,15,.35);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.pin span {
+    transform: rotate(45deg);
+
+    color: white;
+
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.checkpoint-label {
+    margin-top: 8px;
+
+    padding: 4px 7px;
+
+    background: #f7e8c4;
+
+    border: 1px solid #80623d;
+
+    border-radius: 8px;
+
+    font-size: 11px;
+
+    font-weight: bold;
+
+    white-space: nowrap;
+
+    box-shadow: 0 3px 5px rgba(50,30,10,.15);
+}
+
+/* locked */
+
+.checkpoint.locked {
+    opacity: .45;
+
+    filter: grayscale(.8);
+
+    cursor: not-allowed;
+}
+
+/* completed */
+
+.checkpoint.completed .pin {
+    background: #536b4d;
+}
+
+/* active */
+
+.checkpoint.active {
+    animation: pinBounce 1.5s infinite;
+}
+
+@keyframes pinBounce {
+
+    0%,100% {
+        transform: translate(-50%, -100%);
+    }
+
+    50% {
+        transform: translate(-50%, -112%);
+    }
+}
+
+/* =========================
+   UNLOCK MESSAGE
+========================= */
+
+.unlock-message {
+    position: absolute;
+
+    left: 50%;
+    top: 48%;
+
+    transform:
+        translate(-50%, -50%)
+        scale(.7);
+
+    opacity: 0;
+
+    z-index: 20;
+
+    padding: 18px 25px;
+
+    text-align: center;
+
+    background: #fff0c9;
+
+    border: 3px solid #b88942;
+
+    border-radius: 15px;
+
+    box-shadow:
+        0 10px 35px rgba(50,30,10,.4);
+
+    pointer-events: none;
+}
+
+.unlock-message.show {
+    animation: unlockAnimation 1.2s forwards;
+}
+
+@keyframes unlockAnimation {
+
+    20% {
+        opacity: 1;
+        transform:
+            translate(-50%, -50%)
+            scale(1.1);
+    }
+
+    70% {
+        opacity: 1;
+        transform:
+            translate(-50%, -50%)
+            scale(1);
+    }
+
+    100% {
+        opacity: 0;
+        transform:
+            translate(-50%, -50%)
+            scale(1);
+    }
+}
+
+/* =========================
+   CASE CARD
+========================= */
+
+.case-card {
+    position: relative;
+
+    margin: 0 18px 30px;
+
+    padding: 25px;
+
+    background:
+        linear-gradient(
+            rgba(255,247,220,.95),
+            rgba(239,220,180,.95)
+        );
+
+    border: 1px solid #92764d;
+
+    border-radius: 17px;
+
+    box-shadow:
+        0 8px 18px rgba(60,40,20,.18);
+}
+
+.case-title {
+    font-size: 12px;
+
+    letter-spacing: 3px;
+
+    color: #8b3026;
+
+    font-weight: bold;
+}
+
+.story {
+    margin-top: 12px;
+
+    font-size: 17px;
+
+    line-height: 1.7;
+}
+
+/* =========================
+   CHOICES
+========================= */
+
+.choices {
+    display: grid;
+
+    gap: 10px;
+
+    margin-top: 20px;
+}
+
+.choice {
+    width: 100%;
+
+    border: 1px solid #87683f;
+
+    background: #ead6aa;
+
+    color: #33291f;
+
+    border-radius: 11px;
+
+    padding: 14px;
+
+    text-align: left;
+
+    font-family: Georgia, serif;
+
+    font-size: 15px;
+
+    cursor: pointer;
+
+    transition: .2s;
+}
+
+.choice:hover {
+    background: #dfc18b;
+
+    transform: translateY(-2px);
+}
+
+.choice.correct {
+    background: #c9d7bd;
+
+    border-color: #536b4d;
+}
+
+.choice.wrong {
+    background: #e6bdb0;
+
+    border-color: #8b3026;
+}
+
+.choice:disabled {
+    cursor: default;
+}
+
+/* =========================
+   FEEDBACK
+========================= */
+
+.feedback {
+    display: none;
+
+    margin-top: 15px;
+
+    padding: 14px;
+
+    background: #efe0bc;
+
+    border-left: 5px solid #b88942;
+
+    border-radius: 9px;
+
+    line-height: 1.6;
+}
+
+/* =========================
+   NEXT BUTTON
+========================= */
+
+.next-button {
+    display: none;
+
+    width: 100%;
+
+    margin-top: 15px;
+
+    padding: 14px;
+
+    border: none;
+
+    border-radius: 11px;
+
+    background: #8b3026;
+
+    color: #fff5dd;
+
+    font-family: Georgia, serif;
+
+    font-weight: bold;
+
+    font-size: 15px;
+
+    cursor: pointer;
+}
+
+.next-button:hover {
+    background: #70241e;
+}
+
+/* =========================
+   FINAL
+========================= */
+
+.final-screen {
+    display: none;
+
+    text-align: center;
+
+    padding: 30px 20px 45px;
+}
+
+.trophy {
+    font-size: 70px;
+}
+
+.final-screen h2 {
+    font-size: 30px;
+}
+
+.final-screen p {
+    max-width: 650px;
+
+    margin: auto;
+
+    line-height: 1.7;
+}
+
+/* =========================
+   MOBILE
+========================= */
+
+@media(max-width:700px) {
+
+    .game {
+        margin: 0;
+        padding: 8px;
+    }
+
+    .game-shell {
+        border-radius: 15px;
+    }
+
+    .title {
+        font-size: 27px;
+    }
+
+    .subtitle {
+        font-size: 9px;
+        letter-spacing: 2px;
+    }
+
+    .map-container {
+        min-height: 480px;
+
+        margin-left: 8px;
+        margin-right: 8px;
+    }
+
+    .checkpoint {
+        width: 70px;
+    }
+
+    .pin {
+        width: 43px;
+        height: 43px;
+    }
+
+    .checkpoint-label {
+        font-size: 9px;
+    }
+
+    .case-card {
+        margin-left: 8px;
+        margin-right: 8px;
+
+        padding: 18px;
+    }
+
+    .story {
+        font-size: 15px;
+    }
+
+    .choice {
+        font-size: 14px;
+    }
+
+    .compass {
+        width: 55px;
+        height: 55px;
+
+        right: 12px;
+        top: 12px;
+
+        font-size: 12px;
+    }
+}
+</style>
+</head>
+
+
+<body>
+
+<div class="game">
+
+<div class="game-shell">
+
+<!-- =========================
+     HEADER
+========================= -->
+
+<header class="header">
+
+    <div class="logo">
+        🕵🏻‍♀️ 📜 🏺
+    </div>
+
+    <div class="title">
+        Abu Hanifah
+    </div>
+
+    <div class="subtitle">
+        THE LOGIC FILES · KUFAH INVESTIGATION
+    </div>
+
+</header>
+
+
+<!-- =========================
+     INTRO
+========================= -->
+
+<section class="intro" id="intro">
+
+    <div class="intro-icons">
+        🗺️ 🔍 🧭
+    </div>
+
+    <p class="intro-text">
+
+        Empat kes. Empat cabaran.
+        Ikuti jejak Imam Abu Hanifah dan
+        bongkar bagaimana beliau menggunakan
+        hujah dan logik dalam setiap perdebatan.
+
+    </p>
+
+    <button
+        class="start-button"
+        id="startButton">
+
+        MULA SIASATAN
+
+    </button>
+
+</section>
+
+
+<!-- =========================
+     GAME
+========================= -->
+
+<section
+    class="game-content"
+    id="gameContent">
+
+
+<!-- PROGRESS -->
+
+<div class="progress">
+
+    <div class="progress-dot active"></div>
+
+    <div class="progress-dot"></div>
+
+    <div class="progress-dot"></div>
+
+    <div class="progress-dot"></div>
+
+</div>
+
+
+<!-- =========================
+     MAP
+========================= -->
+
+<div class="map-container">
+
+    <!-- MAP SVG -->
+
+    <svg
+        class="map-svg"
+        viewBox="0 0 700 560"
+        preserveAspectRatio="none">
+
+        <!-- Ancient road -->
+
+        <path
+            class="old-road"
+            d="
+            M55 470
+            C130 420
+            120 330
+            220 310
+            S330 230
+            400 285
+            S480 410
+            560 350
+            S640 220
+            680 100
+            " />
+
+        <!-- Investigation route -->
+
+        <path
+            class="route"
+            d="
+            M70 440
+            C140 400
+            140 330
+            230 310
+            S330 250
+            400 285
+            S480 390
+            550 350
+            S625 220
+            660 115
+            " />
+
+        <!-- River -->
+
+        <path
+            d="
+            M0 510
+            Q120 470 230 510
+            T460 500
+            T700 515
+            "
+            fill="none"
+            stroke="#6e8f89"
+            stroke-width="22"
+            opacity=".28"
+        />
+
+        <!-- Old city wall -->
+
+        <path
+            d="
+            M80 150
+            Q350 30 620 125
+            "
+            fill="none"
+            stroke="#80623d"
+            stroke-width="5"
+            stroke-dasharray="10 7"
+            opacity=".45"
+        />
+
+    </svg>
+
+
+    <!-- MAP DECORATIONS -->
+
+    <div class="map-decoration palm-1">
+        🌴
+    </div>
+
+    <div class="map-decoration palm-2">
+        🌴
+    </div>
+
+    <div class="map-decoration pottery">
+        🏺
+    </div>
+
+    <div class="map-decoration mosque">
+        🕌
+    </div>
+
+    <div class="map-decoration scroll-decoration">
+        📜
+    </div>
+
+
+    <!-- COMPASS -->
+
+    <div class="compass">
+        N
+    </div>
+
+
+    <!-- =========================
+         CHECKPOINT 1
+    ========================= -->
+
+    <div
+        class="checkpoint active"
+        id="checkpoint1"
+        style="left:10%; top:88%;">
+
+        <div class="pin">
+            <span>1</span>
+        </div>
+
+        <div class="checkpoint-label">
+            KES 1
+        </div>
+
+    </div>
+
+
+    <!-- CHECKPOINT 2 -->
+
+    <div
+        class="checkpoint locked"
+        id="checkpoint2"
+        style="left:34%; top:59%;">
+
+        <div class="pin">
+            <span>🔒</span>
+        </div>
+
+        <div class="checkpoint-label">
+            KES 2
+        </div>
+
+    </div>
+
+
+    <!-- CHECKPOINT 3 -->
+
+    <div
+        class="checkpoint locked"
+        id="checkpoint3"
+        style="left:61%; top:72%;">
+
+        <div class="pin">
+            <span>🔒</span>
+        </div>
+
+        <div class="checkpoint-label">
+            KES 3
+        </div>
+
+    </div>
+
+
+    <!-- CHECKPOINT 4 -->
+
+    <div
+        class="checkpoint locked"
+        id="checkpoint4"
+        style="left:91%; top:22%;">
+
+        <div class="pin">
+            <span>🔒</span>
+        </div>
+
+        <div class="checkpoint-label">
+            KES 4
+        </div>
+
+    </div>
+
+
+    <!-- UNLOCK POPUP -->
+
+    <div
+        class="unlock-message"
+        id="unlockMessage">
+
+        🔓 <strong id="unlockTitle">
+            KES 2 TERBUKA!
+        </strong>
+
+        <br>
+
+        <small>
+            Jejak seterusnya telah ditemui.
+        </small>
+
+    </div>
+
+</div>
+
+
+<!-- =========================
+     CASE CARD
+========================= -->
+
+<div
+    class="case-card"
+    id="caseCard">
+
+    <div
+        class="case-title"
+        id="caseTitle">
+
+        CASE 1 · TUDUHAN TERHADAP UTHMAN
+
+    </div>
+
+
+    <div
+        class="story"
+        id="story">
+
+    </div>
+
+
+    <div
+        class="choices"
+        id="choices">
+
+    </div>
+
+
+    <div
+        class="feedback"
+        id="feedback">
+
+    </div>
+
+
+    <button
+        class="next-button"
+        id="nextButton">
+
+        IKUT JEJAK KE KES SETERUSNYA →
+
+    </button>
+
+</div>
+
+
+<!-- =========================
+     FINAL SCREEN
+========================= -->
+
+<div
+    class="final-screen"
+    id="finalScreen">
+
+    <div class="trophy">
+        🏆
+    </div>
+
+    <h2>
+        SIASATAN SELESAI
+    </h2>
+
+    <p>
+        Empat kes telah disiasat.
+        Kekuatan Abu Hanifah bukan sekadar
+        pada jawapan yang diberikan,
+        tetapi pada cara beliau membina
+        hujah dan menunjukkan percanggahan
+        dengan tenang.
+    </p>
+
+</div>
+
+
+</section>
+
+</div>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   GAME DATA
+========================================================= */
+
+const cases = [
+
+    /* =========================
+       CASE 1
+    ========================= */
+
+    {
+        title:
+            "CASE 1 · TUDUHAN TERHADAP UTHMAN",
+
+        story:
+            "Seorang lelaki dari Kufah mendakwa bahawa Uthman bin Affan رضي الله عنه berasal daripada keturunan Yahudi dan masih beragama Yahudi. Abu Hanifah datang menemuinya dan menggunakan satu persoalan untuk menguji percanggahan dalam dakwaan itu.",
+
+        choices: [
+
+            "A. Abu Hanifah terus memarahinya kerana membuat tuduhan.",
+
+            "B. Abu Hanifah membuat tuduhan lain sebagai balasan.",
+
+            "C. Abu Hanifah menggunakan pendiriannya sendiri tentang perkahwinan dengan Yahudi untuk menunjukkan percanggahan dakwaannya."
+
+        ],
+
+        answer: 2,
+
+        explanation:
+            "Abu Hanifah menunjukkan bahawa lelaki itu sendiri tidak sanggup mengahwinkan anak perempuannya dengan seorang Yahudi, sedangkan dakwaannya membawa kepada percanggahan dengan kisah perkahwinan puteri Rasulullah ﷺ."
+    },
+
+
+    /* =========================
+       CASE 2
+    ========================= */
+
+    {
+        title:
+            "CASE 2 · AL-DAHHAK AL-SHARI",
+
+        story:
+            "Al-Dahhak al-Shari datang mencabar Abu Hanifah kerana beliau berpendapat bahawa tahkim antara Ali رضي الله عنه dan Muawiyah رضي الله عنه adalah harus. Abu Hanifah tidak terus berdebat tentang hukum tersebut — beliau menguji prinsip lawannya terlebih dahulu.",
+
+        choices: [
+
+            "A. Abu Hanifah meminta Al-Dahhak memilih seorang hakim daripada kalangan penyokongnya sendiri.",
+
+            "B. Abu Hanifah terus meninggalkan perdebatan.",
+
+            "C. Abu Hanifah meminta semua orang mengundi pendapat yang benar."
+
+        ],
+
+        answer: 0,
+
+        explanation:
+            "Abu Hanifah meminta seorang daripada kumpulan Al-Dahhak sendiri menjadi hakim. Apabila Al-Dahhak bersetuju, Abu Hanifah menunjukkan percanggahan: jika tahkim diterima dalam pertikaian mereka, mengapa tahkim yang berlaku pada zaman para sahabat ditolak?"
+    },
+
+
+    /* =========================
+       CASE 3
+    ========================= */
+
+    {
+        title:
+            "CASE 3 · JAHM BIN SAFWAN",
+
+        story:
+            "Jahm bin Safwan datang membawa persoalan tentang iman. Abu Hanifah mendengar dakwaannya dan kemudian meminta Jahm mengemukakan persoalannya. Apakah pendekatan Abu Hanifah?",
+
+        choices: [
+
+            "A. Abu Hanifah menjawab dengan hujah, ayat al-Quran dan hadis sehingga Jahm tidak meneruskan perbahasan.",
+
+            "B. Abu Hanifah hanya meminta Jahm menghafal satu ayat.",
+
+            "C. Abu Hanifah menolak semua soalan tanpa memberikan hujah."
+
+        ],
+
+        answer: 0,
+
+        explanation:
+            "Abu Hanifah membawa dalil daripada al-Quran dan hadis untuk menjawab persoalan Jahm. Jahm kemudian pergi dengan alasan ada sesuatu yang terlupa dan tidak kembali."
+    },
+
+
+    /* =========================
+       CASE 4
+    ========================= */
+
+    {
+        title:
+            "CASE 4 · GOLONGAN YANG MENAFIKAN PENCIPTA",
+
+        story:
+            "Sekumpulan orang datang kepada Abu Hanifah dan menafikan kewujudan Pencipta. Abu Hanifah tidak bermula dengan perbahasan yang panjang. Beliau memberikan satu gambaran yang mudah: sebuah kapal penuh barang bergerak sendiri di tengah ombak dan angin tanpa pelayar atau pengemudi.",
+
+        choices: [
+
+            "A. Abu Hanifah bertanya sama ada kapal seperti itu boleh bergerak sendiri tanpa pengemudi.",
+
+            "B. Abu Hanifah mengubah topik kepada politik.",
+
+            "C. Abu Hanifah menyuruh mereka menerima pendapatnya tanpa berfikir."
+
+        ],
+
+        answer: 0,
+
+        explanation:
+            "Analogi kapal digunakan untuk menunjukkan bahawa sesuatu yang tersusun dan bergerak menuju tujuan tidak masuk akal dianggap berlaku tanpa pengatur. Hujah itu membawa kepada persoalan tentang Pencipta alam."
+    }
+
+];
+
+
+/* =========================================================
+   VARIABLES
+========================================================= */
+
+let currentCase = 0;
+
+let solved = false;
+
+
+/* =========================================================
+   ELEMENTS
+========================================================= */
+
+const intro =
+    document.getElementById("intro");
+
+const gameContent =
+    document.getElementById("gameContent");
+
+const startButton =
+    document.getElementById("startButton");
+
+const story =
+    document.getElementById("story");
+
+const caseTitle =
+    document.getElementById("caseTitle");
+
+const choices =
+    document.getElementById("choices");
+
+const feedback =
+    document.getElementById("feedback");
+
+const nextButton =
+    document.getElementById("nextButton");
+
+const unlockMessage =
+    document.getElementById("unlockMessage");
+
+const unlockTitle =
+    document.getElementById("unlockTitle");
+
+const finalScreen =
+    document.getElementById("finalScreen");
+
+const caseCard =
+    document.getElementById("caseCard");
+
+const progressDots =
+    document.querySelectorAll(".progress-dot");
+
+
+/* =========================================================
+   CHECKPOINTS
+========================================================= */
+
+const checkpoints = [
+
+    document.getElementById("checkpoint1"),
+
+    document.getElementById("checkpoint2"),
+
+    document.getElementById("checkpoint3"),
+
+    document.getElementById("checkpoint4")
+
+];
+
+
+/* =========================================================
+   START GAME
+========================================================= */
+
+startButton.addEventListener(
+    "click",
+    () => {
+
+        intro.style.display = "none";
+
+        gameContent.style.display = "block";
+
+        renderCase();
+
+    }
+);
+
+
+/* =========================================================
+   RENDER CASE
+========================================================= */
+
+function renderCase() {
+
+    const current =
+        cases[currentCase];
+
+    solved = false;
+
+
+    /* Title */
+
+    caseTitle.textContent =
+        current.title;
+
+
+    /* Story */
+
+    story.textContent =
+        current.story;
+
+
+    /* Clear old choices */
+
+    choices.innerHTML = "";
+
+
+    /* Reset feedback */
+
+    feedback.style.display =
+        "none";
+
+    feedback.innerHTML =
+        "";
+
+
+    /* Hide next */
+
+    nextButton.style.display =
+        "none";
+
+
+    /* Create choices */
+
+    current.choices.forEach(
+        (choiceText, index) => {
+
+            const button =
+                document.createElement("button");
+
+            button.className =
+                "choice";
+
+            button.textContent =
+                choiceText;
+
+            button.addEventListener(
+                "click",
+                () => {
+
+                    checkAnswer(
+                        index,
+                        button
+                    );
+
+                }
+            );
+
+            choices.appendChild(button);
+
+        }
+    );
+
+
+    updateMap();
+
+    updateProgress();
+
+}
+
+
+/* =========================================================
+   ANSWER
+========================================================= */
+
+function checkAnswer(
+    selected,
+    button
+) {
+
+    if (solved)
+        return;
+
+
+    const current =
+        cases[currentCase];
+
+
+    if (
+        selected ===
+        current.answer
+    ) {
+
+        /* Correct */
+
+        solved = true;
+
+        button.classList.add(
+            "correct"
+        );
+
+
+        /* Disable choices */
+
+        document
+            .querySelectorAll(".choice")
+            .forEach(
+                btn => {
+
+                    btn.disabled =
+                        true;
+
+                }
+            );
+
+
+        /* Feedback */
+
+        feedback.innerHTML =
+
+            `
+            <strong>✓ HUJAH DITEMUI</strong>
+            <br><br>
+            ${current.explanation}
+            `;
+
+        feedback.style.display =
+            "block";
+
+
+        /* Mark checkpoint completed */
+
+        checkpoints[currentCase]
+            .classList.remove(
+                "active"
+            );
+
+        checkpoints[currentCase]
+            .classList.add(
+                "completed"
+            );
+
+
+        /* Unlock next */
+
+        if (
+            currentCase <
+            cases.length - 1
+        ) {
+
+            unlockNextCase();
+
+        }
+
+        else {
+
+            nextButton.textContent =
+                "SELESAIKAN SIASATAN ✓";
+
+            nextButton.style.display =
+                "block";
+
+        }
+
+    }
+
+    else {
+
+        /* Wrong */
+
+        button.classList.add(
+            "wrong"
+        );
+
+
+        feedback.innerHTML =
+
+            `
+            <strong>Belum tepat.</strong>
+            <br>
+            Cuba perhatikan bagaimana
+            Abu Hanifah menggunakan hujah
+            lawannya sendiri.
+            `;
+
+        feedback.style.display =
+            "block";
+
+
+        /* Allow retry */
+
+        setTimeout(
+            () => {
+
+                button.classList.remove(
+                    "wrong"
+                );
+
+            },
+            700
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   UNLOCK NEXT CASE
+========================================================= */
+
+function unlockNextCase() {
+
+    const nextIndex =
+        currentCase + 1;
+
+
+    /* Unlock visual */
+
+    checkpoints[nextIndex]
+        .classList.remove(
+            "locked"
+        );
+
+
+    checkpoints[nextIndex]
+        .classList.add(
+            "active"
+        );
+
+
+    /* Change icon */
+
+    const pin =
+        checkpoints[nextIndex]
+            .querySelector(
+                ".pin span"
+            );
+
+    pin.textContent =
+        nextIndex + 1;
+
+
+    /* Popup */
+
+    unlockTitle.textContent =
+        `KES ${nextIndex + 1} TERBUKA!`;
+
+    unlockMessage.classList.remove(
+        "show"
+    );
+
+    void unlockMessage.offsetWidth;
+
+    unlockMessage.classList.add(
+        "show"
+    );
+
+
+    /* Show next button */
+
+    nextButton.style.display =
+        "block";
+
+
+    /* Button text */
+
+    nextButton.textContent =
+        `IKUT JEJAK KE KES ${nextIndex + 1} →`;
+
+}
+
+
+/* =========================================================
+   NEXT CASE
+========================================================= */
+
+nextButton.addEventListener(
+    "click",
+    () => {
+
+        if (
+            currentCase <
+            cases.length - 1
+        ) {
+
+            currentCase++;
+
+            renderCase();
+
+
+            /* Scroll smoothly */
+
+            caseCard.scrollIntoView({
+                behavior: "smooth",
+                block: "center"
+            });
+
+        }
+
+        else {
+
+            showFinal();
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   MAP UPDATE
+========================================================= */
+
+function updateMap() {
+
+    checkpoints.forEach(
+        (checkpoint, index) => {
+
+            checkpoint.classList.remove(
+                "active"
+            );
+
+            if (
+                index <
+                currentCase
+            ) {
+
+                checkpoint.classList.add(
+                    "completed"
+                );
+
+                checkpoint.classList.remove(
+                    "locked"
+                );
+
+                checkpoint
+                    .querySelector(
+                        ".pin span"
+                    )
+                    .textContent =
+                    "✓";
+
+            }
+
+            else if (
+                index ===
+                currentCase
+            ) {
+
+                checkpoint.classList.add(
+                    "active"
+                );
+
+                checkpoint.classList.remove(
+                    "locked"
+                );
+
+                checkpoint
+                    .querySelector(
+                        ".pin span"
+                    )
+                    .textContent =
+                    index + 1;
+
+            }
+
+            else {
+
+                checkpoint.classList.add(
+                    "locked"
+                );
+
+                checkpoint.classList.remove(
+                    "active"
+                );
+
+                checkpoint
+                    .querySelector(
+                        ".pin span"
+                    )
+                    .textContent =
+                    "🔒";
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   PROGRESS DOTS
+========================================================= */
+
+function updateProgress() {
+
+    progressDots.forEach(
+        (dot, index) => {
+
+            dot.classList.remove(
+                "active",
+                "done"
+            );
+
+
+            if (
+                index <
+                currentCase
+            ) {
+
+                dot.classList.add(
+                    "done"
+                );
+
+            }
+
+            else if (
+                index ===
+                currentCase
+            ) {
+
+                dot.classList.add(
+                    "active"
+                );
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   FINAL SCREEN
+========================================================= */
+
+function showFinal() {
+
+    gameContent.style.display =
+        "none";
+
+    finalScreen.style.display =
+        "block";
+
+}
+
+</script>
+
+</body>
+</html>
